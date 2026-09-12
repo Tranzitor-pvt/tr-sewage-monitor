@@ -6,450 +6,59 @@
 <title>Sewage Main Hall Monitoring</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{
-  --bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#6f7c91;--line:#e5eaf2;
-  --accent:#1f6feb;--good:#168a5b;--warn:#c98916;--danger:#d84a4a;--critical:#a92222;
-  --shadow:0 8px 28px rgba(27,45,79,.07)
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
-.page{width:min(1240px,calc(100% - 28px));margin:18px auto 28px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
-.brand h1{margin:0;font-size:22px;font-weight:750}.brand p{margin:5px 0 0;font-size:13px;color:var(--muted)}
-.live{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted)}
-.live-dot{width:9px;height:9px;border-radius:50%;background:#aab4c3}
-.grid{display:grid;grid-template-columns:1fr 1.35fr .85fr;gap:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
-.metric,.status-card{padding:18px;min-height:150px}
-.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.05px;font-weight:700}
-.value{margin-top:12px;display:flex;align-items:flex-end;gap:7px}
-.value strong{font-size:38px;line-height:1;letter-spacing:-1.2px}
-.value span{color:var(--muted);font-size:15px;margin-bottom:4px}
-.sub{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.45}
-.status-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px}
-.status-badge{padding:9px 13px;border-radius:10px;font-size:13px;font-weight:800;letter-spacing:.25px;background:#eef2f7}
-.status-text{margin-top:12px;font-size:13px;line-height:1.55;color:#48566d}
-.trend{margin-top:10px;font-size:12px;font-weight:700}
-.levelbar{height:7px;margin-top:16px;border-radius:999px;background:#edf1f6;overflow:hidden}
-.levelbar>div{height:100%;width:0%;background:var(--accent);transition:width .8s ease}
-.main{display:grid;grid-template-columns:390px 1fr;gap:14px;margin-top:14px}
-.chamber-card{padding:18px}
-.chamber-wrap{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;margin-top:14px}
-.chamber{height:260px;border:2px solid #b8c3d2;border-radius:11px 11px 16px 16px;position:relative;overflow:hidden;background:linear-gradient(#fbfdff,#f4f8fc)}
-.sensor{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:34px;height:10px;border-radius:5px;background:#7d899c;z-index:4}
-.distance-line{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:1px;border-left:1px dashed #9db0c6;z-index:3}
-.water{position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#4aa8ff,#1f6feb);transition:height 1s ease}
-.water:before{content:"";position:absolute;left:-8%;top:-5px;width:116%;height:10px;background:rgba(135,203,255,.9);border-radius:50%}
-.scale{position:absolute;right:7px;top:8px;bottom:8px;display:flex;flex-direction:column;justify-content:space-between;font-size:9px;color:#6f7c91;z-index:3}
-.chamber-info .big{font-size:29px;font-weight:800;letter-spacing:-.7px}.chamber-info .big span{font-size:14px;color:var(--muted);font-weight:600}
-.info-line{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.55}
-.thresholds{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
-.threshold{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:11px}.threshold span:first-child{color:var(--muted)}
-.chart-card{padding:18px;min-height:356px}
-.chart-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
-.chart-title{font-size:14px;font-weight:750}.chart-note{font-size:11px;color:var(--muted)}
-.chart-wrap{height:285px}
-.footer{margin-top:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:11px}
-.error{display:none;margin-top:10px;padding:9px 11px;border:1px solid #f0c7c7;background:#fff5f5;color:#b43a3a;border-radius:9px;font-size:11px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}.main{grid-template-columns:1fr}}
-@media(max-width:520px){.page{width:min(100% - 18px,1240px);margin-top:10px}.topbar{align-items:flex-start;flex-direction:column}.brand h1{font-size:19px}.metric,.status-card,.chamber-card,.chart-card{padding:15px}.value strong{font-size:34px}.chamber-wrap{grid-template-columns:130px 1fr}.chamber{height:225px}}
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#6f7c91;--line:#e5eaf2;--blue:#1f6feb;--good:#168a5b;--warn:#c98916;--danger:#d84a4a;--critical:#a92222;--soft:#f8fafc;--shadow:0 7px 24px rgba(27,45,79,.065)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.page{width:min(1240px,calc(100% - 28px));margin:18px auto 24px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}.brand h1{margin:0;font-size:21px;font-weight:760;letter-spacing:-.2px}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}.live{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);white-space:nowrap}.live-dot{width:9px;height:9px;border-radius:50%;background:#aab4c3}
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}.summary{display:grid;grid-template-columns:.95fr 1.35fr .85fr;gap:13px}.metric,.status-card{padding:17px;min-height:142px}.label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.05px;font-weight:750}.value{display:flex;align-items:flex-end;gap:6px;margin-top:11px}.value strong{font-size:36px;line-height:1;letter-spacing:-1.1px}.value span{font-size:14px;color:var(--muted);margin-bottom:4px}.sub{margin-top:11px;color:var(--muted);font-size:11px;line-height:1.45}.status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:11px}.status-badge{font-size:12px;font-weight:800;padding:8px 11px;border-radius:9px;background:#eef2f7}.fill-number{font-size:19px;font-weight:800}.status-text{font-size:12px;line-height:1.52;color:#48566d;margin-top:10px}.trend{font-size:11px;font-weight:700;margin-top:8px}.levelbar{height:6px;background:#edf1f6;border-radius:999px;overflow:hidden;margin-top:13px}.levelbar>div{height:100%;width:0;transition:width .7s ease}
+.primary{display:grid;grid-template-columns:370px 1fr;gap:13px;margin-top:13px}.chamber-card{padding:17px}.chamber-wrap{display:grid;grid-template-columns:145px 1fr;gap:17px;align-items:center;margin-top:13px}.chamber{height:255px;border:2px solid #b8c3d2;border-radius:10px 10px 15px 15px;position:relative;overflow:hidden;background:linear-gradient(#fbfdff,#f4f8fc)}.sensor-mark{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:34px;height:9px;border-radius:5px;background:#8794a6;z-index:5}.distance-line{position:absolute;top:18px;left:50%;transform:translateX(-50%);border-left:1px dashed #a7b7c9;z-index:3}.water{position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#56b0ff,#1f6feb);transition:height 1s ease}.water:before{content:"";position:absolute;left:-8%;top:-5px;width:116%;height:10px;border-radius:50%;background:#91d3ff}.scale{position:absolute;top:8px;right:7px;bottom:8px;display:flex;flex-direction:column;justify-content:space-between;font-size:8px;color:#6f7c91;z-index:4}.chamber-info .big{font-size:27px;font-weight:800;letter-spacing:-.7px}.chamber-info .big small{font-size:13px;color:var(--muted);font-weight:650}.info-line{margin-top:10px;color:var(--muted);font-size:11px;line-height:1.55}.thresholds{margin-top:13px;padding-top:11px;border-top:1px solid var(--line)}.threshold{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:10px}.threshold span:first-child{color:var(--muted)}
+.chart-card{padding:17px;min-height:345px}.chart-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.chart-title{font-size:13px;font-weight:760}.chart-note{font-size:10px;color:var(--muted)}.chart-wrap{height:280px}
+.health{margin-top:13px;padding:17px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.section-title{font-size:13px;font-weight:760}.overall{font-size:11px;font-weight:800;padding:7px 10px;border-radius:8px;background:#eef2f7}.health-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.health-item{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:11px;min-height:78px}.health-name{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:750}.health-value{font-size:13px;font-weight:800;margin-top:8px}.health-detail{font-size:9px;color:var(--muted);margin-top:5px;line-height:1.35}.state-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:#aab4c3}
+.error{display:none;margin-top:9px;padding:8px 10px;border-radius:8px;background:#fff5f5;border:1px solid #f0c7c7;color:#b43a3a;font-size:10px}.footer{margin-top:13px;padding-top:11px;border-top:1px solid #dde3eb;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}.footer .copyright{margin-left:auto;text-align:right}
+@media(max-width:1000px){.health-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:900px){.summary{grid-template-columns:1fr}.primary{grid-template-columns:1fr}}@media(max-width:600px){.page{width:calc(100% - 18px);margin-top:10px}.topbar{flex-direction:column;align-items:flex-start}.brand h1{font-size:18px}.metric,.status-card,.chamber-card,.chart-card,.health{padding:14px}.value strong{font-size:33px}.chamber-wrap{grid-template-columns:125px 1fr}.chamber{height:220px}.health-grid{grid-template-columns:repeat(2,1fr)}.footer .copyright{margin-left:0;text-align:left;width:100%}}
 </style>
 </head>
 <body>
 <div class="page">
-
-<div class="topbar">
-  <div class="brand">
-    <h1>Sewage Main Hall Monitoring</h1>
-    <p>Early warning for sewage-line cleaning and maintenance</p>
-  </div>
-  <div class="live">
-    <span id="liveDot" class="live-dot"></span>
-    <span id="liveText">Connecting</span>
-    <span>•</span>
-    <span id="lastUpdate">Waiting for data</span>
-  </div>
-</div>
-
-<section class="grid">
-
-  <div class="card metric">
-    <div class="label">Distance to Sewage Surface</div>
-    <div class="value">
-      <strong id="distanceValue">--</strong>
-      <span>m</span>
-    </div>
-    <div class="sub">
-      Lower distance means a higher sewage level.
-    </div>
-  </div>
-
-  <div class="card status-card">
-    <div class="label">Maintenance Status</div>
-    <div class="status-row">
-      <div id="maintenanceBadge" class="status-badge">Waiting for data</div>
-      <div id="fillText" style="font-size:20px;font-weight:800">--%</div>
-    </div>
-    <div id="maintenanceText" class="status-text">
-      Status will appear after the latest reading is received.
-    </div>
-    <div id="trendText" class="trend">Level trend: --</div>
-    <div class="levelbar"><div id="levelBarFill"></div></div>
-  </div>
-
-  <div class="card metric">
-    <div class="label">Monitoring Unit Temperature</div>
-    <div class="value">
-      <strong id="tempValue">--</strong>
-      <span>°C</span>
-    </div>
-    <div class="sub">
-      Internal monitoring-unit temperature.
-    </div>
-    <div id="errorBox" class="error"></div>
-  </div>
-
+<header class="topbar"><div class="brand"><h1>Sewage Main Hall Monitoring</h1><p>Early warning for sewage-line cleaning and maintenance</p></div><div class="live"><span id="liveDot" class="live-dot"></span><strong id="liveText">Connecting</strong><span>•</span><span id="lastUpdate">Waiting for data</span></div></header>
+<section class="summary">
+<div class="card metric"><div class="label">Distance to Sewage Surface</div><div class="value"><strong id="distanceValue">--</strong><span>m</span></div><div class="sub">Smaller distance means a higher sewage level.</div></div>
+<div class="card status-card"><div class="label">Maintenance Status</div><div class="status-row"><div id="maintenanceBadge" class="status-badge">Waiting</div><div id="fillText" class="fill-number">--%</div></div><div id="maintenanceText" class="status-text">Waiting for the latest measurement.</div><div id="trendText" class="trend">Level trend: --</div><div class="levelbar"><div id="levelBarFill"></div></div></div>
+<div class="card metric"><div class="label">Monitoring Unit Temperature</div><div class="value"><strong id="tempValue">--</strong><span>°C</span></div><div class="sub">Internal device temperature for system health.</div><div id="errorBox" class="error"></div></div>
 </section>
-
-<section class="main">
-
-  <div class="card chamber-card">
-    <div class="label">Main Hall Level</div>
-
-    <div class="chamber-wrap">
-      <div class="chamber">
-        <div class="sensor"></div>
-        <div id="distanceLine" class="distance-line"></div>
-        <div id="water" class="water"></div>
-        <div class="scale">
-          <span>FULL</span>
-          <span>75%</span>
-          <span>50%</span>
-          <span>25%</span>
-          <span>LOW</span>
-        </div>
-      </div>
-
-      <div class="chamber-info">
-        <div class="big">
-          <span id="fillPercent">--</span> <span>% full</span>
-        </div>
-
-        <div id="hallMessage" class="info-line">
-          Waiting for the latest reading.
-        </div>
-
-        <div class="thresholds">
-          <div class="threshold">
-            <span>Attention below</span>
-            <strong id="attentionText">-- m</strong>
-          </div>
-          <div class="threshold">
-            <span>Cleaning below</span>
-            <strong id="cleanText">-- m</strong>
-          </div>
-          <div class="threshold">
-            <span>Critical at / below</span>
-            <strong id="criticalText">-- m</strong>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card chart-card">
-    <div class="chart-head">
-      <div class="chart-title">Distance Trend</div>
-      <div class="chart-note">Lower distance = higher sewage level</div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="distanceChart"></canvas>
-    </div>
-  </div>
-
+<section class="primary">
+<div class="card chamber-card"><div class="label">Main Hall Level</div><div class="chamber-wrap"><div class="chamber"><div class="sensor-mark"></div><div id="distanceLine" class="distance-line"></div><div id="water" class="water"></div><div class="scale"><span>FULL</span><span>75%</span><span>50%</span><span>25%</span><span>LOW</span></div></div><div class="chamber-info"><div class="big"><span id="fillPercent">--</span><small>% full</small></div><div id="hallMessage" class="info-line">Waiting for the latest reading.</div><div class="thresholds"><div class="threshold"><span>Attention below</span><strong id="attentionText">-- m</strong></div><div class="threshold"><span>Cleaning below</span><strong id="cleanText">-- m</strong></div><div class="threshold"><span>Critical at / below</span><strong id="criticalText">-- m</strong></div></div></div></div></div>
+<div class="card chart-card"><div class="chart-head"><div class="chart-title">Distance Trend</div><div class="chart-note">Lower distance = higher sewage level</div></div><div class="chart-wrap"><canvas id="distanceChart"></canvas></div></div>
 </section>
-
-<div class="footer">
-  <span>Sewage Monitoring System</span>
-  <span id="refreshText">Auto refresh: --</span>
+<section class="card health"><div class="section-head"><div class="section-title">System Health</div><div id="overallHealth" class="overall">Waiting</div></div><div class="health-grid">
+<div class="health-item"><div class="health-name">Slave Link</div><div id="slaveValue" class="health-value"><span class="state-dot"></span><span class="txt">--</span></div><div id="slaveDetail" class="health-detail">Communication status</div></div>
+<div class="health-item"><div class="health-name">Modem</div><div id="modemValue" class="health-value"><span class="state-dot"></span><span class="txt">--</span></div><div class="health-detail">Communication module</div></div>
+<div class="health-item"><div class="health-name">SIM Card</div><div id="simValue" class="health-value"><span class="state-dot"></span><span class="txt">--</span></div><div class="health-detail">SIM readiness</div></div>
+<div class="health-item"><div class="health-name">Mobile Network</div><div id="networkValue" class="health-value"><span class="state-dot"></span><span class="txt">--</span></div><div id="networkDetail" class="health-detail">Registration state</div></div>
+<div class="health-item"><div class="health-name">Internet</div><div id="internetValue" class="health-value"><span class="state-dot"></span><span class="txt">--</span></div><div id="internetDetail" class="health-detail">Packet data state</div></div>
+<div class="health-item"><div class="health-name">Signal Strength</div><div id="rssiValue" class="health-value"><span class="state-dot"></span><span class="txt">--</span></div><div id="rssiDetail" class="health-detail">GSM RSSI</div></div>
+</div></section>
+<footer class="footer"><span id="refreshText">Auto refresh: --</span><span class="copyright">© 2026 Tranzitor Pvt Ltd. All rights reserved.</span></footer>
 </div>
-
-</div>
-
 <script>
-// ============================================================
-// CONFIGURATION
-// Field 1 is DISTANCE from top-mounted sensor to sewage surface.
-// Smaller distance = higher / more critical sewage level.
-// ============================================================
-const CONFIG = {
-  CHANNEL_ID: "3491670",
-  READ_API_KEY: "",
-
-  DISTANCE_FIELD: 1,
-  TEMP_FIELD: 2,
-
-  // Physical measuring range of the hall:
-  MIN_DISTANCE_M: 0.50,   // practically full / minimum safe measurable distance
-  MAX_DISTANCE_M: 10.00,  // empty / normal-low sewage condition
-
-  // Maintenance thresholds (reverse logic):
-  ATTENTION_DISTANCE_M: 4.00,
-  CLEAN_DISTANCE_M: 2.00,
-  CRITICAL_DISTANCE_M: 1.00,
-
-  LIVE_REFRESH_MS: 15000,
-  HISTORY_REFRESH_MS: 60000,
-  HISTORY_RESULTS: 80,
-
-  ONLINE_SEC: 60,
-  DELAYED_SEC: 180
-};
-// ============================================================
-
-const $ = id => document.getElementById(id);
-let distanceChart;
-
-function apiKeyQuery(first=false){
-  if(!CONFIG.READ_API_KEY) return "";
-  return `${first ? "?" : "&"}api_key=${encodeURIComponent(CONFIG.READ_API_KEY)}`;
-}
-function fieldName(n){return `field${n}`}
-function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
-function showError(msg){$("errorBox").style.display="block";$("errorBox").textContent=msg}
-function clearError(){$("errorBox").style.display="none"}
-
-function setLiveStatus(ageSec){
-  const dot=$("liveDot"), text=$("liveText");
-  if(ageSec<=CONFIG.ONLINE_SEC){
-    dot.style.background="var(--good)";text.textContent="Online";text.style.color="var(--good)";
-  }else if(ageSec<=CONFIG.DELAYED_SEC){
-    dot.style.background="var(--warn)";text.textContent="Data delayed";text.style.color="var(--warn)";
-  }else{
-    dot.style.background="var(--danger)";text.textContent="Offline";text.style.color="var(--danger)";
-  }
-}
-
-function distanceToFillPercent(distance){
-  const span=CONFIG.MAX_DISTANCE_M-CONFIG.MIN_DISTANCE_M;
-  if(span<=0) return 0;
-  return clamp(((CONFIG.MAX_DISTANCE_M-distance)/span)*100,0,100);
-}
-
-function setMaintenance(distance){
-  const badge=$("maintenanceBadge");
-  const text=$("maintenanceText");
-  const hall=$("hallMessage");
-
-  if(distance<=CONFIG.CRITICAL_DISTANCE_M){
-    badge.textContent="CRITICAL";
-    badge.style.background="#fdeaea";
-    badge.style.color="var(--critical)";
-    text.textContent="Sewage level is very high. Immediate cleaning and line inspection are recommended.";
-    hall.textContent="Main hall is near full. Immediate maintenance action is required.";
-  }else if(distance<=CONFIG.CLEAN_DISTANCE_M){
-    badge.textContent="CLEANING REQUIRED";
-    badge.style.background="#fff0e6";
-    badge.style.color="#b6531b";
-    text.textContent="Sewage level has reached the cleaning zone. Schedule cleaning now.";
-    hall.textContent="Cleaning level reached. Arrange sewage-line cleaning.";
-  }else if(distance<=CONFIG.ATTENTION_DISTANCE_M){
-    badge.textContent="ATTENTION";
-    badge.style.background="#fff7df";
-    badge.style.color="var(--warn)";
-    text.textContent="Sewage level is rising toward the cleaning zone. Monitor closely.";
-    hall.textContent="Level is elevated. Prepare maintenance if distance continues decreasing.";
-  }else{
-    badge.textContent="NORMAL";
-    badge.style.background="#eaf7f1";
-    badge.style.color="var(--good)";
-    text.textContent="Sewage level is within the normal range.";
-    hall.textContent="Main hall condition is normal. No cleaning action is currently required.";
-  }
-}
-
-function updateTrend(values){
-  if(values.length<6){
-    $("trendText").textContent="Level trend: Not enough data";
-    return;
-  }
-
-  const recent=values.slice(-6);
-  const delta=recent[recent.length-1]-recent[0];
-
-  // IMPORTANT: decreasing distance means sewage level is rising.
-  if(delta < -0.08){
-    $("trendText").textContent=`Level trend: Rising (${Math.abs(delta).toFixed(2)} m closer)`;
-    $("trendText").style.color="var(--danger)";
-  }else if(delta > 0.08){
-    $("trendText").textContent=`Level trend: Falling (${delta.toFixed(2)} m farther)`;
-    $("trendText").style.color="var(--good)";
-  }else{
-    $("trendText").textContent="Level trend: Stable";
-    $("trendText").style.color="var(--muted)";
-  }
-}
-
-function buildChart(labels,values){
-  if(distanceChart) distanceChart.destroy();
-
-  distanceChart=new Chart($("distanceChart"),{
-    type:"line",
-    data:{
-      labels,
-      datasets:[{
-        label:"Distance",
-        data:values,
-        borderWidth:2,
-        pointRadius:1.6,
-        pointHoverRadius:4,
-        tension:.28,
-        fill:false
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      interaction:{intersect:false,mode:"index"},
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>`Distance: ${ctx.parsed.y.toFixed(2)} m`}}
-      },
-      scales:{
-        x:{
-          ticks:{color:"#7d899c",maxTicksLimit:8,font:{size:10}},
-          grid:{display:false}
-        },
-        y:{
-          reverse:true,
-          suggestedMin:CONFIG.MIN_DISTANCE_M,
-          suggestedMax:CONFIG.MAX_DISTANCE_M,
-          ticks:{
-            color:"#7d899c",
-            font:{size:10},
-            callback:value=>`${value} m`
-          },
-          grid:{color:"#edf1f5"}
-        }
-      }
-    }
-  });
-}
-
-async function loadLatest(){
-  if(CONFIG.CHANNEL_ID==="YOUR_CHANNEL_ID"){
-    showError("Set your ThingSpeak Channel ID in CONFIG.");
-    return;
-  }
-
-  const url=
-    `https://api.thingspeak.com/channels/${CONFIG.CHANNEL_ID}/feeds/last.json`
-    + apiKeyQuery(true);
-
-  try{
-    const res=await fetch(url,{cache:"no-store"});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const d=await res.json();
-
-    const distance=parseFloat(d[fieldName(CONFIG.DISTANCE_FIELD)]);
-    const temp=parseFloat(d[fieldName(CONFIG.TEMP_FIELD)]);
-
-    if(!Number.isFinite(distance)||!Number.isFinite(temp))
-      throw new Error("Invalid distance or temperature data.");
-
-    clearError();
-
-    $("distanceValue").textContent=distance.toFixed(2);
-    $("tempValue").textContent=temp.toFixed(1);
-
-    const fill=distanceToFillPercent(distance);
-
-    $("fillText").textContent=`${fill.toFixed(0)}%`;
-    $("fillPercent").textContent=fill.toFixed(0);
-    $("levelBarFill").style.width=`${fill}%`;
-    $("water").style.height=`${fill}%`;
-
-    // Distance guide from top to water surface.
-    $("distanceLine").style.height=`${100-fill}%`;
-
-    if(distance<=CONFIG.CRITICAL_DISTANCE_M){
-      $("levelBarFill").style.background="var(--critical)";
-    }else if(distance<=CONFIG.CLEAN_DISTANCE_M){
-      $("levelBarFill").style.background="var(--danger)";
-    }else if(distance<=CONFIG.ATTENTION_DISTANCE_M){
-      $("levelBarFill").style.background="var(--warn)";
-    }else{
-      $("levelBarFill").style.background="var(--good)";
-    }
-
-    setMaintenance(distance);
-
-    const created=new Date(d.created_at);
-    const ageSec=(Date.now()-created.getTime())/1000;
-
-    $("lastUpdate").textContent=
-      `Last update ${created.toLocaleTimeString([],{
-        hour:"2-digit",minute:"2-digit",second:"2-digit"
-      })}`;
-
-    setLiveStatus(ageSec);
-
-  }catch(err){
-    showError(`ThingSpeak read failed: ${err.message}`);
-    $("liveText").textContent="API error";
-    $("liveText").style.color="var(--danger)";
-    $("liveDot").style.background="var(--danger)";
-  }
-}
-
-async function loadHistory(){
-  if(CONFIG.CHANNEL_ID==="YOUR_CHANNEL_ID") return;
-
-  const url=
-    `https://api.thingspeak.com/channels/${CONFIG.CHANNEL_ID}/feeds.json?results=${CONFIG.HISTORY_RESULTS}`
-    + apiKeyQuery(false);
-
-  try{
-    const res=await fetch(url,{cache:"no-store"});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const j=await res.json();
-    const feeds=Array.isArray(j.feeds)?j.feeds:[];
-
-    const labels=[];
-    const distances=[];
-
-    for(const f of feeds){
-      const distance=parseFloat(f[fieldName(CONFIG.DISTANCE_FIELD)]);
-      if(!Number.isFinite(distance)) continue;
-
-      labels.push(
-        new Date(f.created_at).toLocaleTimeString([],{
-          hour:"2-digit",minute:"2-digit"
-        })
-      );
-      distances.push(distance);
-    }
-
-    buildChart(labels,distances);
-    updateTrend(distances);
-
-  }catch(err){
-    showError(`History read failed: ${err.message}`);
-  }
-}
-
-$("attentionText").textContent=`${CONFIG.ATTENTION_DISTANCE_M.toFixed(2)} m`;
-$("cleanText").textContent=`${CONFIG.CLEAN_DISTANCE_M.toFixed(2)} m`;
-$("criticalText").textContent=`${CONFIG.CRITICAL_DISTANCE_M.toFixed(2)} m`;
-$("refreshText").textContent=`Auto refresh every ${CONFIG.LIVE_REFRESH_MS/1000} sec`;
-
-loadLatest();
-loadHistory();
-
-setInterval(loadLatest,CONFIG.LIVE_REFRESH_MS);
-setInterval(loadHistory,CONFIG.HISTORY_REFRESH_MS);
+const CONFIG={CHANNEL_ID:"3491670",READ_API_KEY:"",DISTANCE_FIELD:1,TEMP_FIELD:2,SLAVE_FIELD:3,MODEM_FIELD:4,SIM_FIELD:5,NETWORK_FIELD:6,INTERNET_FIELD:7,RSSI_FIELD:8,MIN_DISTANCE_M:.50,MAX_DISTANCE_M:10.00,ATTENTION_DISTANCE_M:4.00,CLEAN_DISTANCE_M:2.00,CRITICAL_DISTANCE_M:1.00,LIVE_REFRESH_MS:15000,HISTORY_REFRESH_MS:60000,HISTORY_RESULTS:80,ONLINE_SEC:60,DELAYED_SEC:180};
+const $=id=>document.getElementById(id);let distanceChart;
+function apiKeyQuery(first=false){if(!CONFIG.READ_API_KEY)return"";return`${first?"?":"&"}api_key=${encodeURIComponent(CONFIG.READ_API_KEY)}`}
+function fieldName(i){return`field${i}`}function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function num(v){const x=parseFloat(v);return Number.isFinite(x)?x:null}
+function showError(m){$("errorBox").style.display="block";$("errorBox").textContent=m}function clearError(){$("errorBox").style.display="none"}
+function setHealthBox(id,text,color){const el=$(id);el.querySelector(".txt").textContent=text;el.querySelector(".state-dot").style.background=color}
+function setLiveStatus(age){if(age<=CONFIG.ONLINE_SEC){$("liveDot").style.background="var(--good)";$("liveText").textContent="Online";$("liveText").style.color="var(--good)"}else if(age<=CONFIG.DELAYED_SEC){$("liveDot").style.background="var(--warn)";$("liveText").textContent="Data delayed";$("liveText").style.color="var(--warn)"}else{$("liveDot").style.background="var(--danger)";$("liveText").textContent="Offline";$("liveText").style.color="var(--danger)"}}
+function fillPercent(d){const s=CONFIG.MAX_DISTANCE_M-CONFIG.MIN_DISTANCE_M;return s>0?clamp((CONFIG.MAX_DISTANCE_M-d)/s*100,0,100):0}
+function setMaintenance(d){const b=$("maintenanceBadge"),t=$("maintenanceText"),h=$("hallMessage"),bar=$("levelBarFill");if(d<=CONFIG.CRITICAL_DISTANCE_M){b.textContent="CRITICAL";b.style.background="#fdeaea";b.style.color="var(--critical)";t.textContent="Sewage level is very high. Immediate cleaning and line inspection are recommended.";h.textContent="Main hall is near full. Immediate maintenance action is required.";bar.style.background="var(--critical)"}else if(d<=CONFIG.CLEAN_DISTANCE_M){b.textContent="CLEANING REQUIRED";b.style.background="#fff0e6";b.style.color="#b6531b";t.textContent="Cleaning level reached. Schedule sewage-line cleaning now.";h.textContent="Cleaning level reached. Arrange sewage-line cleaning.";bar.style.background="var(--danger)"}else if(d<=CONFIG.ATTENTION_DISTANCE_M){b.textContent="ATTENTION";b.style.background="#fff7df";b.style.color="var(--warn)";t.textContent="Sewage level is rising toward the cleaning zone. Monitor closely.";h.textContent="Level is elevated. Prepare maintenance if distance continues decreasing.";bar.style.background="var(--warn)"}else{b.textContent="NORMAL";b.style.background="#eaf7f1";b.style.color="var(--good)";t.textContent="Sewage level is within the normal operating range.";h.textContent="Main hall condition is normal. No cleaning action is currently required.";bar.style.background="var(--good)"}}
+function updateTrend(v){if(v.length<6){$("trendText").textContent="Level trend: Not enough data";return}const a=v.slice(-6),delta=a[a.length-1]-a[0];if(delta<-.08){$("trendText").textContent=`Level trend: Rising (${Math.abs(delta).toFixed(2)} m closer)`;$("trendText").style.color="var(--danger)"}else if(delta>.08){$("trendText").textContent=`Level trend: Falling (${delta.toFixed(2)} m farther)`;$("trendText").style.color="var(--good)"}else{$("trendText").textContent="Level trend: Stable";$("trendText").style.color="var(--muted)"}}
+function decodeSlave(v){if(v===null)return["--","No data","#aab4c3"];return v===0?["OK","Normal communication","var(--good)"]:v===1?["Offline","No slave CAN data","var(--danger)"]:v===2?["Data Frozen","CAN alive, measurement not updating","var(--warn)"]:v===3?["Sensor Error","Measurement error reported","var(--danger)"]:["Unknown","Unknown status","#aab4c3"]}
+function decodeNetwork(v){if(v===null)return["--","No data","#aab4c3"];return v===0?["Not Registered","Network unavailable","var(--danger)"]:v===1?["Registered","Home network","var(--good)"]:v===2?["Searching","Searching for network","var(--warn)"]:v===3?["Denied","Registration denied","var(--danger)"]:v===4?["Unknown","Unknown registration state","var(--warn)"]:v===5?["Registered","Roaming","var(--good)"]:["Unknown","Unknown status","#aab4c3"]}
+function decodeInternet(v){if(v===null)return["--","No data","#aab4c3"];return v===0?["Disconnected","No packet data","var(--danger)"]:v===1?["Attached","GPRS attached","var(--warn)"]:v===2?["Online","Bearer active / IP assigned","var(--good)"]:["Unknown","Unknown state","#aab4c3"]}
+function decodeRSSI(v){if(v===null||v===99)return["--","No valid RSSI","#aab4c3"];if(v<=9)return[`${v} / 31`,"Poor signal","var(--danger)"];if(v<=14)return[`${v} / 31`,"Fair signal","var(--warn)"];if(v<=19)return[`${v} / 31`,"Good signal","var(--good)"];return[`${v} / 31`,"Very good signal","var(--good)"]}
+function updateHealth(d){const s=num(d[fieldName(CONFIG.SLAVE_FIELD)]),m=num(d[fieldName(CONFIG.MODEM_FIELD)]),sim=num(d[fieldName(CONFIG.SIM_FIELD)]),net=num(d[fieldName(CONFIG.NETWORK_FIELD)]),inet=num(d[fieldName(CONFIG.INTERNET_FIELD)]),rssi=num(d[fieldName(CONFIG.RSSI_FIELD)]);let x=decodeSlave(s);setHealthBox("slaveValue",x[0],x[2]);$("slaveDetail").textContent=x[1];setHealthBox("modemValue",m===1?"Detected":m===0?"Not Detected":"--",m===1?"var(--good)":m===0?"var(--danger)":"#aab4c3");setHealthBox("simValue",sim===1?"Ready":sim===0?"Not Ready":"--",sim===1?"var(--good)":sim===0?"var(--danger)":"#aab4c3");x=decodeNetwork(net);setHealthBox("networkValue",x[0],x[2]);$("networkDetail").textContent=x[1];x=decodeInternet(inet);setHealthBox("internetValue",x[0],x[2]);$("internetDetail").textContent=x[1];x=decodeRSSI(rssi);setHealthBox("rssiValue",x[0],x[2]);$("rssiDetail").textContent=x[1];const overall=$("overallHealth");const anyMissing=[s,m,sim,net,inet].some(v=>v===null);if(anyMissing){overall.textContent="PARTIAL DATA";overall.style.background="#eef2f7";overall.style.color="var(--muted)"}else if(s===0&&m===1&&sim===1&&(net===1||net===5)&&inet===2){overall.textContent="SYSTEM HEALTHY";overall.style.background="#eaf7f1";overall.style.color="var(--good)"}else if(m===0||sim===0||s===1||inet===0){overall.textContent="ACTION REQUIRED";overall.style.background="#fdeaea";overall.style.color="var(--danger)"}else{overall.textContent="CHECK SYSTEM";overall.style.background="#fff7df";overall.style.color="var(--warn)"}}
+function buildChart(labels,values){if(distanceChart)distanceChart.destroy();distanceChart=new Chart($("distanceChart"),{type:"line",data:{labels,datasets:[{data:values,borderWidth:2,pointRadius:1.5,pointHoverRadius:4,tension:.28,fill:false}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"index"},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Distance: ${c.parsed.y.toFixed(2)} m`}}},scales:{x:{ticks:{color:"#7d899c",maxTicksLimit:8,font:{size:10}},grid:{display:false}},y:{reverse:true,suggestedMin:CONFIG.MIN_DISTANCE_M,suggestedMax:CONFIG.MAX_DISTANCE_M,ticks:{color:"#7d899c",font:{size:10},callback:v=>`${v} m`},grid:{color:"#edf1f5"}}}}})}
+async function loadLatest(){if(CONFIG.CHANNEL_ID==="YOUR_CHANNEL_ID"){showError("Set your ThingSpeak Channel ID in CONFIG.");return}const url=`https://api.thingspeak.com/channels/${CONFIG.CHANNEL_ID}/feeds/last.json`+apiKeyQuery(true);try{const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw new Error(`HTTP ${r.status}`);const d=await r.json(),dist=num(d[fieldName(CONFIG.DISTANCE_FIELD)]),temp=num(d[fieldName(CONFIG.TEMP_FIELD)]);if(dist===null||temp===null)throw new Error("Invalid distance or temperature data.");clearError();$("distanceValue").textContent=dist.toFixed(2);$("tempValue").textContent=temp.toFixed(1);const f=fillPercent(dist);$("fillText").textContent=`${f.toFixed(0)}%`;$("fillPercent").textContent=f.toFixed(0);$("levelBarFill").style.width=`${f}%`;$("water").style.height=`${f}%`;$("distanceLine").style.height=`${Math.max(0,100-f)}%`;setMaintenance(dist);updateHealth(d);const created=new Date(d.created_at),age=(Date.now()-created.getTime())/1000;$("lastUpdate").textContent=`Last update ${created.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})}`;setLiveStatus(age)}catch(e){showError(`ThingSpeak read failed: ${e.message}`);$("liveDot").style.background="var(--danger)";$("liveText").textContent="API error";$("liveText").style.color="var(--danger)"}}
+async function loadHistory(){if(CONFIG.CHANNEL_ID==="YOUR_CHANNEL_ID")return;const url=`https://api.thingspeak.com/channels/${CONFIG.CHANNEL_ID}/feeds.json?results=${CONFIG.HISTORY_RESULTS}`+apiKeyQuery(false);try{const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw new Error(`HTTP ${r.status}`);const j=await r.json(),labels=[],values=[];for(const f of(j.feeds||[])){const dist=num(f[fieldName(CONFIG.DISTANCE_FIELD)]);if(dist===null)continue;labels.push(new Date(f.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));values.push(dist)}buildChart(labels,values);updateTrend(values)}catch(e){showError(`History read failed: ${e.message}`)}}
+$("attentionText").textContent=`${CONFIG.ATTENTION_DISTANCE_M.toFixed(2)} m`;$("cleanText").textContent=`${CONFIG.CLEAN_DISTANCE_M.toFixed(2)} m`;$("criticalText").textContent=`${CONFIG.CRITICAL_DISTANCE_M.toFixed(2)} m`;$("refreshText").textContent=`Auto refresh every ${CONFIG.LIVE_REFRESH_MS/1000} sec`;loadLatest();loadHistory();setInterval(loadLatest,CONFIG.LIVE_REFRESH_MS);setInterval(loadHistory,CONFIG.HISTORY_REFRESH_MS);
 </script>
 </body>
 </html>

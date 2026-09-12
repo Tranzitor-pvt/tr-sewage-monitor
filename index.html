@@ -1,64 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>TR Sewage Monitoring</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            min-height: 100vh;
-        }
-
-        .card {
-            text-align: center;
-            background: #1e293b;
-            padding: 50px;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 700px;
-        }
-
-        h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .status {
-            font-size: 22px;
-            margin-top: 30px;
-        }
-
-        .online {
-            color: #4ade80;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sewage Monitoring System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--bg:#07111f;--panel:#0d1b2a;--panel2:#102338;--text:#eef6ff;--muted:#8fa8bf;--cyan:#35d7ff;--green:#36d399;--yellow:#f6c453;--red:#ff5c6c;--border:rgba(255,255,255,.08)}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 10% 0%,rgba(37,140,255,.18),transparent 32%),radial-gradient(circle at 100% 20%,rgba(53,215,255,.12),transparent 30%),var(--bg);color:var(--text);min-height:100vh}
+.shell{max-width:1400px;margin:auto;padding:22px}.header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px;background:rgba(13,27,42,.86);border:1px solid var(--border);border-radius:20px;backdrop-filter:blur(12px);margin-bottom:18px}.brand h1{font-size:clamp(22px,3vw,34px);margin:0 0 4px;font-weight:800}.brand p{margin:0;color:var(--muted)}
+.status-wrap{display:flex;align-items:center;gap:10px}.dot{width:12px;height:12px;border-radius:50%;background:var(--yellow);box-shadow:0 0 16px currentColor}.status-text{font-weight:800;letter-spacing:.8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:linear-gradient(180deg,rgba(16,35,56,.94),rgba(13,27,42,.94));border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:0 14px 40px rgba(0,0,0,.20)}
+.metric-title{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}.metric-value{font-size:clamp(44px,7vw,78px);font-weight:850;line-height:1}.metric-value span{font-size:.35em;color:var(--muted);font-weight:700;margin-left:8px}.metric-sub{margin-top:12px;color:var(--muted);font-size:14px}
+.depth-card{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center}.ring{--p:0;width:180px;height:180px;border-radius:50%;background:conic-gradient(var(--cyan) calc(var(--p)*1%),rgba(255,255,255,.07) 0);display:grid;place-items:center;margin:auto;position:relative}.ring:before{content:"";width:145px;height:145px;border-radius:50%;background:#0d1b2a;position:absolute}.ring-content{position:relative;text-align:center}.ring-content strong{font-size:32px}.ring-content small{display:block;color:var(--muted);margin-top:4px}
+.tank-card{grid-column:1/-1}.tank-area{display:grid;grid-template-columns:minmax(260px,440px) 1fr;gap:28px;align-items:center}.tank{height:330px;border:4px solid rgba(207,231,255,.45);border-radius:18px 18px 28px 28px;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));box-shadow:inset 0 0 35px rgba(0,0,0,.28)}.sensor{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:58px;height:24px;border-radius:8px;background:#dcecff;color:#062033;display:grid;place-items:center;font-size:11px;font-weight:900;z-index:5}.beam{position:absolute;top:40px;left:50%;transform:translateX(-50%);width:1px;height:42%;border-left:2px dashed rgba(53,215,255,.4);z-index:3}.water{position:absolute;left:0;bottom:0;width:100%;height:0%;background:linear-gradient(180deg,rgba(53,215,255,.72),rgba(37,140,255,.88));transition:height 1.3s cubic-bezier(.2,.9,.2,1)}.water:before{content:"";position:absolute;left:-10%;top:-9px;width:120%;height:18px;background:rgba(111,231,255,.7);border-radius:50%;animation:wave 3s ease-in-out infinite alternate}@keyframes wave{from{transform:translateX(-2%) scaleY(.7)}to{transform:translateX(2%) scaleY(1.05)}}
+.scale{position:absolute;right:10px;top:58px;bottom:18px;display:flex;flex-direction:column;justify-content:space-between;color:rgba(255,255,255,.48);font-size:11px;z-index:4;text-align:right}.tank-info h2{margin:0 0 10px;font-size:28px}.tank-info p{color:var(--muted);line-height:1.7;max-width:560px}.info-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}.pill{padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid var(--border)}.pill b{display:block;font-size:17px}.pill span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.chart-card{min-height:340px}.chart-wrap{height:260px}.footer{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:13px;padding:16px 4px 4px}.error{margin-top:14px;padding:10px 12px;border-radius:10px;background:rgba(255,92,108,.10);border:1px solid rgba(255,92,108,.25);color:#ff9aa5;display:none;font-size:13px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.tank-card{grid-column:auto}.depth-card{grid-template-columns:1fr}.tank-area{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}}
+</style>
 </head>
-
 <body>
-
-<div class="card">
-
-    <h1>TR Sewage Monitoring System</h1>
-
-    <p>Remote Water Level Monitoring</p>
-
-    <div class="status">
-        Web Dashboard:
-        <span class="online">ONLINE</span>
-    </div>
-
+<div class="shell">
+<header class="header"><div class="brand"><h1>Sewage Monitoring System</h1><p>Remote depth & sensor temperature monitoring</p></div><div class="status-wrap"><div id="statusDot" class="dot"></div><div><div id="statusText" class="status-text">CONNECTING</div><div id="lastUpdate" style="font-size:12px;color:var(--muted);margin-top:3px">Waiting for ThingSpeak…</div></div></div></header>
+<main class="grid">
+<section class="card depth-card"><div><div class="metric-title">Current Water Depth</div><div class="metric-value"><b id="depthValue">--</b><span>m</span></div><div class="metric-sub">Live value from ThingSpeak Field 1</div></div><div class="ring" id="depthRing"><div class="ring-content"><strong id="depthPercent">--%</strong><small>of configured depth</small></div></div></section>
+<section class="card"><div class="metric-title">TFmini Temperature</div><div class="metric-value"><b id="tempValue">--</b><span>°C</span></div><div class="metric-sub">TFmini internal temperature · ThingSpeak Field 2</div><div class="info-row"><div class="pill"><b id="tempState">--</b><span>Sensor state</span></div><div class="pill"><b id="entryId">--</b><span>Entry ID</span></div></div><div id="errorBox" class="error"></div></section>
+<section class="card tank-card"><div class="tank-area"><div class="tank"><div class="sensor">TFmini</div><div class="beam"></div><div class="water" id="water"></div><div class="scale"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div></div><div class="tank-info"><div class="metric-title">Live Chamber Visualization</div><h2 id="tankHeadline">Waiting for live data</h2><p>The chamber level animation follows the current depth reading. Set the real chamber maximum depth in the CONFIG section for an accurate percentage.</p><div class="info-row"><div class="pill"><b id="tankDepth">-- m</b><span>Current depth</span></div><div class="pill"><b id="maxDepthText">-- m</b><span>Configured maximum</span></div><div class="pill"><b id="ageText">--</b><span>Data age</span></div></div></div></div></section>
+<section class="card chart-card"><div class="metric-title">Water Depth History</div><div class="chart-wrap"><canvas id="depthChart"></canvas></div></section>
+<section class="card chart-card"><div class="metric-title">Temperature History</div><div class="chart-wrap"><canvas id="tempChart"></canvas></div></section>
+</main>
+<footer class="footer"><span>TR Sewage Monitoring Demo</span><span id="refreshText">Auto refresh: --</span></footer>
 </div>
-
+<script>
+const CONFIG={
+  CHANNEL_ID:"3491670",
+  READ_API_KEY:"",
+  DEPTH_FIELD:1,
+  TEMP_FIELD:2,
+  MAX_DEPTH_M:10.00,
+  LIVE_REFRESH_MS:15000,
+  HISTORY_REFRESH_MS:60000,
+  HISTORY_RESULTS:100,
+  ONLINE_SEC:60,
+  DELAYED_SEC:180
+};
+const $=id=>document.getElementById(id);let depthChart,tempChart;
+function apiKeyQuery(first=false){if(!CONFIG.READ_API_KEY)return"";return`${first?"?":"&"}api_key=${encodeURIComponent(CONFIG.READ_API_KEY)}`}
+function fieldName(n){return`field${n}`}function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function formatAge(sec){if(!Number.isFinite(sec))return"--";if(sec<60)return`${Math.floor(sec)} sec`;if(sec<3600)return`${Math.floor(sec/60)} min`;return`${Math.floor(sec/3600)} hr`}
+function setConnectionStatus(ageSec){const dot=$("statusDot"),text=$("statusText");if(ageSec<=CONFIG.ONLINE_SEC){text.textContent="ONLINE";text.style.color="var(--green)";dot.style.background="var(--green)";dot.style.color="var(--green)"}else if(ageSec<=CONFIG.DELAYED_SEC){text.textContent="DATA DELAY";text.style.color="var(--yellow)";dot.style.background="var(--yellow)";dot.style.color="var(--yellow)"}else{text.textContent="OFFLINE";text.style.color="var(--red)";dot.style.background="var(--red)";dot.style.color="var(--red)"}}
+function showError(msg){$("errorBox").style.display="block";$("errorBox").textContent=msg}function clearError(){$("errorBox").style.display="none"}
+async function loadLatest(){
+ if(CONFIG.CHANNEL_ID==="YOUR_CHANNEL_ID"){showError("Edit CONFIG.CHANNEL_ID in index.html first.");return}
+ const url=`https://api.thingspeak.com/channels/${CONFIG.CHANNEL_ID}/feeds/last.json${apiKeyQuery(true)}`;
+ try{const res=await fetch(url,{cache:"no-store"});if(!res.ok)throw new Error(`HTTP ${res.status}`);const d=await res.json();
+ const depth=parseFloat(d[fieldName(CONFIG.DEPTH_FIELD)]),temp=parseFloat(d[fieldName(CONFIG.TEMP_FIELD)]);
+ if(!Number.isFinite(depth)||!Number.isFinite(temp))throw new Error("Field 1 or Field 2 does not contain a valid number.");
+ clearError();$("depthValue").textContent=depth.toFixed(2);$("tempValue").textContent=temp.toFixed(1);$("tankDepth").textContent=`${depth.toFixed(2)} m`;$("entryId").textContent=d.entry_id??"--";
+ let pct=clamp(depth/CONFIG.MAX_DEPTH_M*100,0,100);$("water").style.height=`${pct}%`;$("depthRing").style.setProperty("--p",pct.toFixed(1));$("depthPercent").textContent=`${pct.toFixed(0)}%`;
+ $("tankHeadline").textContent=pct>=90?"Critical water level":pct>=75?"High water level":pct>=40?"Normal operating level":"Low water level";
+ $("tempState").textContent=temp>=70?"HIGH":temp<=-20?"LOW":"NORMAL";
+ const created=new Date(d.created_at),ageSec=(Date.now()-created.getTime())/1000;$("lastUpdate").textContent=`Last update: ${created.toLocaleString()}`;$("ageText").textContent=formatAge(ageSec);setConnectionStatus(ageSec);
+ }catch(err){showError(`ThingSpeak read failed: ${err.message}`);$("statusText").textContent="API ERROR";$("statusText").style.color="var(--red)";$("statusDot").style.background="var(--red)"}}
+function makeChart(canvasId,label,data,unit){return new Chart($(canvasId),{type:"line",data:{labels:data.labels,datasets:[{label,data:data.values,borderWidth:2,pointRadius:1.5,tension:.32,fill:true}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"index"},plugins:{legend:{labels:{color:"#c9d8e6"}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} ${unit}`}}},scales:{x:{ticks:{color:"#7890a6",maxTicksLimit:8},grid:{color:"rgba(255,255,255,.04)"}},y:{ticks:{color:"#7890a6"},grid:{color:"rgba(255,255,255,.05)"}}}}})}
+async function loadHistory(){
+ if(CONFIG.CHANNEL_ID==="YOUR_CHANNEL_ID")return;
+ const base=`https://api.thingspeak.com/channels/${CONFIG.CHANNEL_ID}/feeds.json?results=${CONFIG.HISTORY_RESULTS}`,url=base+apiKeyQuery(false);
+ try{const res=await fetch(url,{cache:"no-store"});if(!res.ok)throw new Error(`HTTP ${res.status}`);const j=await res.json(),feeds=Array.isArray(j.feeds)?j.feeds:[],labels=[],depths=[],temps=[];
+ for(const f of feeds){const dv=parseFloat(f[fieldName(CONFIG.DEPTH_FIELD)]),tv=parseFloat(f[fieldName(CONFIG.TEMP_FIELD)]);if(!Number.isFinite(dv)||!Number.isFinite(tv))continue;labels.push(new Date(f.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));depths.push(dv);temps.push(tv)}
+ if(depthChart)depthChart.destroy();if(tempChart)tempChart.destroy();depthChart=makeChart("depthChart","Depth",{labels,values:depths},"m");tempChart=makeChart("tempChart","Temperature",{labels,values:temps},"°C");
+ }catch(err){showError(`History read failed: ${err.message}`)}}
+$("maxDepthText").textContent=`${CONFIG.MAX_DEPTH_M.toFixed(2)} m`;$("refreshText").textContent=`Auto refresh: ${CONFIG.LIVE_REFRESH_MS/1000} sec`;
+loadLatest();loadHistory();setInterval(loadLatest,CONFIG.LIVE_REFRESH_MS);setInterval(loadHistory,CONFIG.HISTORY_REFRESH_MS);
+</script>
 </body>
 </html>
